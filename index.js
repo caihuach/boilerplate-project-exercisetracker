@@ -43,7 +43,7 @@ app.post('/api/users/:_id/exercises', async function (req, res) {
   const { _id } = params;
   const { date } = body;
   // find user first
-  const user = await db.models.Log.findById(params._id).exec();
+  const user = await db.models.Log.findById(_id).select().exec();
   if (!user) {
     throw new Error('no user ' + _id);
   }
@@ -51,8 +51,9 @@ app.post('/api/users/:_id/exercises', async function (req, res) {
   body.date = date ? new Date(date) : new Date();
   user.log.push(body);
   await user.save();
-
-  res.json({ ...user.toObject, ...body });
+  const { username } = user;
+  res.json({ _id, username, ...body });
+  // res.json(user);
 });
 
 app.get('/api/users/:_id/logs', async function (req, res) {
