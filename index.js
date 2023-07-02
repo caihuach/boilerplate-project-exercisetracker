@@ -41,20 +41,25 @@ app.route('/api/users')
 app.post('/api/users/:_id/exercises', async function (req, res) {
   const { params, body } = req;
   const { _id } = params;
+  const { date } = body;
   // find user first
   const user = await db.models.Log.findById(params._id).exec();
   if (!user) {
     throw new Error('no user ' + _id);
   }
 
-  const exercise = await db.models.Exercise.create({});
+  body.date = date ? new Date(date) : new Date();
+  user.log.push(body);
+  await user.save();
+
+  res.json({ ...user.toObject, ...body });
 });
 
 app.get('/api/users/:_id/logs', async function (req, res) {
   const { params } = req;
   const { _id } = params;
 
-  const logs = await db.models.Log.find().exec();
+  const logs = await db.models.Log.findById(_id).exec();
 
   res.json(logs);
 })
