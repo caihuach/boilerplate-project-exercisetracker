@@ -42,14 +42,16 @@ async function main() {
     const { date } = body;
     body.date = date ? new Date(date) : new Date();
     // find user first
-    const user = await db.models.Log.findByIdAndUpdate(_id, { $push: { log: body } }).exec();
+    const user = await db.models.Log
+      .findByIdAndUpdate(_id, { $push: { log: body } })
+      .exec();
 
     if (!user) {
       throw new Error('no user ' + _id);
     }
 
     const { username } = user;
-    res.json({ _id, username, ...body });
+    res.json({ _id, username, ...body, date: body.date.toDateString() });
     // res.json(user);
   });
 

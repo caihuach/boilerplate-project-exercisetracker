@@ -7,10 +7,6 @@ const models = {};
 async function init(DB_URI) {
     await mongoose.connect(DB_URI);
 
-    const userSchema = new Schema({
-        username: String
-    })
-
     const exerciseSchema = new Schema({
         description: String,
         duration: Number,
@@ -26,27 +22,17 @@ async function init(DB_URI) {
 
     const logSchema = new Schema({
         username: String,
-        count: Number,
+        count: {
+            type: Number,
+            default: function () {
+                return this.log.length;
+            }
+        },
         log: [exerciseSchema],
     });
 
-    models.User = model('User', userSchema);
-    models.Exercise = model('Exercise', exerciseSchema);
+    // models.Exercise = model('Exercise', exerciseSchema);
     models.Log = model('Log', logSchema);
 }
 
-const userService = {
-    create: async function (body) {
-        const user = new models.User(body);
-        await user.save();
-    }
-}
-
-const exerciseService = {
-    create: async function (body) {
-        const exercise = new models.Exercise(body);
-        await exercise.save();
-    }
-}
-
-module.exports = { init, models, userService, exerciseService };
+module.exports = { init, models };
