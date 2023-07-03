@@ -14,18 +14,20 @@ async function init(DB_URI) {
     const exerciseSchema = new Schema({
         description: String,
         duration: Number,
-        date: Date
+        date: {
+            type: Date,
+            default: Date.now,
+            get: (date) => date.toDateString()
+        },
+    }, {
+        toJSON: { getters: true },
+        toObject: { getters: true }
     })
 
     const logSchema = new Schema({
         username: String,
+        count: Number,
         log: [exerciseSchema],
-    }, {
-        toJSON: { virtuals: true },
-        toObject: { virtuals: true }
-    });
-    logSchema.virtual('count').get(function () {
-        return this.log.length;
     });
 
     models.User = model('User', userSchema);
