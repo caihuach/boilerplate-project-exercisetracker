@@ -25,7 +25,7 @@ async function init(DB_URI) {
         count: {
             type: Number,
             default: function () {
-                return this.log.length;
+                return this.log ? this.log.length : 0;
             }
         },
         log: [exerciseSchema],
